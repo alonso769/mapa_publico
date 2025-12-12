@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Determina la URL base automáticamente
-// VERCEL_ENV existe en Vercel, por lo tanto, usa '/'. En otro lado, usa '/mapa_publico/'.
-const isVercel = process.env.VERCEL_ENV;
-const BASE_URL = isVercel ? '/' : '/mapa_publico/';
+// Determina la URL base ahora usando la variable que configuramos en Vercel (VITE_BASE_URL)
+// Si VERCEL_ENV existe (en Vercel), o si VITE_BASE_URL está definido, úsalo. 
+// Si no, usa el valor de GitHub Pages.
+const VERCEL_OVERRIDE_URL = process.env.VITE_BASE_URL;
+
+const BASE_URL = VERCEL_OVERRIDE_URL ? VERCEL_OVERRIDE_URL : '/mapa_publico/';
 
 // https://vitejs.dev/config/
 export default defineConfig({
