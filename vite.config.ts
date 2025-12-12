@@ -3,17 +3,17 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  
-  // REEMPLAZA ESTO CON EL NOMBRE DE TU REPO
-  base: '/mapa_ris/', 
+  plugins: [react()],
+  
+  // CAMBIO NECESARIO PARA VERCEL
+  base: '/', 
 
-  build: {
-    outDir: 'docs', // <--- ESTA ES LA CLAVE: Cambia la salida a 'docs'
-  },
+  build: {
+    outDir: 'docs', 
+  },
 
-  server: {
-    host: '0.0.0.0', // Opcional: para ver en red local si lo necesitas
-    port: 2004,
-  }
+  server: {
+    host: '0.0.0.0', 
+    port: 2004,
+  }
 })
