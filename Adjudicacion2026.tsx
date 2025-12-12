@@ -417,8 +417,8 @@ const StatsWidget = ({ data, tiempos, selectedCareer }: { data: CentroSalud[], t
                 <div style={{textAlign:'right', fontSize:'10px', color:'#195c97', marginTop:'4px'}}>{pctHosp.toFixed(1)}% Ocupado</div>
             </div>
 
-            {/* 2. TIEMPOS DE ROTACIÓN (OCULTADO) */}
-            {/* {tiempos && Object.keys(tiempos).length > 0 && (
+            {/* 2. TIEMPOS DE ROTACIÓN - (Mantenido el diseño de los gráficos y la lógica, pero la renderización condicional se mantiene, y el botón para abrir el modal está oculto) */}
+            {tiempos && Object.keys(tiempos).length > 0 && (
                 <div style={{marginBottom:'25px'}}>
                     <h4 style={{ color: '#f59e0b', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '10px', borderBottom:'2px solid #f59e0b', paddingBottom:'5px' }}>
                         <i className="fas fa-clock mr-2"></i> Tiempos (Meses)
@@ -438,9 +438,9 @@ const StatsWidget = ({ data, tiempos, selectedCareer }: { data: CentroSalud[], t
                          ))}
                     </div>
                 </div>
-            )} */}
+            )}
 
-            {/* 3. GRÁFICAS SEPARADAS (SIEMPRE VISIBLES) */}
+            {/* 3. GRÁFICAS SEPARADAS (SIEMPRE VISIBLES) - (Diseño intacto) */}
             
             {/* GRÁFICA 1: PRIMER NIVEL */}
             {renderChart("Asignación - Primer Nivel (CS/PS)", stats1Nivel, max1Nivel, '#329584', 'fas fa-clinic-medical')}
@@ -709,12 +709,10 @@ const Adjudicacion2026: React.FC = () => {
               {/* <button onClick={() => setShowTimeModal(true)} disabled={selectedCareer === 'TODAS'} className="btn-modern btn-edit" style={{opacity: selectedCareer === 'TODAS' ? 0.5 : 1}}>
                   <i className="fas fa-clock"></i> Tiempos
               </button> */}
-
               {/* Botón Gestión Manual - OCULTADO */}
               {/* <button onClick={() => setShowManageModal(true)} disabled={selectedCareer === 'TODAS'} className="btn-modern btn-save" style={{opacity: selectedCareer === 'TODAS' ? 0.5 : 1}}>
                   <i className="fas fa-edit"></i> Gestión Manual
               </button> */}
-
               {/* Botón Volver 2025 - OCULTADO */}
               {/* <button onClick={() => navigate('/')} className="btn-modern btn-close">
                   <i className="fas fa-arrow-left"></i> Volver 2025
@@ -742,7 +740,7 @@ const Adjudicacion2026: React.FC = () => {
           <button onClick={() => setFiltroRis(filtroRis === 'HOSP' ? 'todos' : 'HOSP')} className="btn-modern" style={{ background: filtroRis === 'HOSP' ? '#f43f5e' : '#ffffff', color: filtroRis === 'HOSP' ? 'white' : '#f43f5e', border: '1px solid #f43f5e' }}>🏥 HOSP/INST</button>
       </div>
 
-      {/* MODAL TIEMPOS - SE DEJA EL MODAL POR SI ACASO, AUNQUE EL BOTÓN ESTÉ OCULTO */}
+      {/* MODAL TIEMPOS */}
       {showTimeModal && (
           <div className="modal-overlay">
               <div className="modal-content" style={{maxWidth:'800px', height:'80vh'}}>
@@ -781,7 +779,7 @@ const Adjudicacion2026: React.FC = () => {
           </div>
       )}
 
-      {/* MODAL GESTIÓN - SE DEJA EL MODAL POR SI ACASO, AUNQUE EL BOTÓN ESTÉ OCULTO */}
+      {/* MODAL GESTIÓN */}
       {showManageModal && (
           <div className="modal-overlay">
               <div className="modal-content">
@@ -922,7 +920,7 @@ const Adjudicacion2026: React.FC = () => {
                                  </div>
                                  <div style={{display:'flex', justifyContent:'space-between', fontSize:'11px'}}>
                                     <span style={{opacity:0.9}}><i className="fas fa-clinic-medical"></i> 1° Nivel:</span>
-                                    <span style={{fontWeight:'bold'}}>{dispPrim}</span>
+                                    <span style={{fontWeight:'bold'}}>{ofertaPrim}</span>
                                  </div>
                             </div>
                         </div>
