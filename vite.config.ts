@@ -5,8 +5,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   
-  // CAMBIO NECESARIO PARA VERCEL
-  base: '/', 
+  // CAMBIO NECESARIO PARA GITHUB PAGES: Usa el nombre del repositorio
+  base: '/mapa_publico/', 
 
   build: {
     outDir: 'docs', 

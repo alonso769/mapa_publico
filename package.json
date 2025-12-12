@@ -3,10 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://TU_USUARIO_GITHUB.github.io/NOMBRE_EXACTO_DE_TU_REPO",
+  "homepage": "https://alonso769.github.io/mapa_publico/",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build",  
+    "predeploy": "npm run build", 
+    "deploy": "gh-pages -d docs", 
     "preview": "vite preview"
   },
   "dependencies": {
