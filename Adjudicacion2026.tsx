@@ -5,7 +5,6 @@ import L from 'leaflet';
 import { useNavigate } from 'react-router-dom';
 
 // --- IMPORTAR FIREBASE ---
-// Nota: La importación de Firebase se mantiene aunque no se use en la UI, ya que tu lógica de carga de datos la requiere.
 import { db } from './firebaseConfig'; 
 import { collection, getDocs, writeBatch, doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -141,10 +140,6 @@ const RIS_COLORS: Record<string, string> = {
     'RIS 7': '#ec4899', 'SIN RIS': '#94a3b8', 
     'HOSPITAL': '#195c97', 'INSTITUTO': '#6366f1', 'DEFAULT': '#64748b'
 };
-
-// Lista de opciones RIS para el selector
-const RIS_OPTIONS = ['RIS 1', 'RIS 2', 'RIS 3', 'RIS 4', 'RIS 5', 'RIS 6', 'RIS 7'];
-
 
 const DISTRICT_TO_RIS: Record<string, string> = {
     'LIMA': 'RIS 1', 'CERCADO DE LIMA': 'RIS 1', 'BRENA': 'RIS 2', 'BREÑA': 'RIS 2', 'JESUS MARIA': 'RIS 2', 
@@ -333,7 +328,7 @@ const StatsWidget = ({ data, tiempos, selectedCareer }: { data: CentroSalud[], t
     const adjudicadoHosp = hospitales.reduce((acc, c) => acc + c.cantidad, 0);
     const pctHosp = ofertadoHosp > 0 ? (adjudicadoHosp / ofertadoHosp) * 100 : 0;
 
-    // 3. Función Agrupar por Universidad (Lógica original respetada para el formato de barra)
+    // 3. Función Agrupar por Universidad (MODIFICADA)
     const getStats = (source: CentroSalud[]) => {
         const uni: Record<string, number> = {};
         source.forEach(c => {
@@ -422,8 +417,8 @@ const StatsWidget = ({ data, tiempos, selectedCareer }: { data: CentroSalud[], t
                 <div style={{textAlign:'right', fontSize:'10px', color:'#195c97', marginTop:'4px'}}>{pctHosp.toFixed(1)}% Ocupado</div>
             </div>
 
-            {/* 2. TIEMPOS DE ROTACIÓN */}
-            {tiempos && Object.keys(tiempos).length > 0 && (
+            {/* 2. TIEMPOS DE ROTACIÓN (OCULTADO) */}
+            {/* {tiempos && Object.keys(tiempos).length > 0 && (
                 <div style={{marginBottom:'25px'}}>
                     <h4 style={{ color: '#f59e0b', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '10px', borderBottom:'2px solid #f59e0b', paddingBottom:'5px' }}>
                         <i className="fas fa-clock mr-2"></i> Tiempos (Meses)
@@ -443,7 +438,7 @@ const StatsWidget = ({ data, tiempos, selectedCareer }: { data: CentroSalud[], t
                          ))}
                     </div>
                 </div>
-            )}
+            )} */}
 
             {/* 3. GRÁFICAS SEPARADAS (SIEMPRE VISIBLES) */}
             
@@ -484,13 +479,14 @@ const Adjudicacion2026: React.FC = () => {
   const [centros, setCentros] = useState<CentroSalud[]>([]);
   const [centroExpandido, setCentroExpandido] = useState<string | null>(null);
   
-  // Los Modales de Gestión Manual y Tiempos ya no tienen botones visibles en el Header.
+  // MODAL GESTIÓN MANUAL
   const [showManageModal, setShowManageModal] = useState(false);
   const [editCentroId, setEditCentroId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<Record<string, number>>({});
   const [editTotalCapacity, setEditTotalCapacity] = useState<number>(0); 
   const [modalSearchTerm, setModalSearchTerm] = useState('');
 
+  // MODAL TIEMPOS
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [tiemposRotacion, setTiemposRotacion] = useState<TiempoRotacionConfig>({}); 
 
@@ -643,17 +639,9 @@ const Adjudicacion2026: React.FC = () => {
   const centrosFiltrados = centros.map(centro => centro).filter(c => {
       const cumpleDistrito = filtroDistrito === 'todos' || (c.distrito && c.distrito === filtroDistrito);
       const matchSearch = searchTerm === '' || c.nombre.includes(searchTerm.toUpperCase());
-      
       let cumpleTipo = true;
-
-      // 1. Manejo del filtro HOSP/INST (usa 'HOSP' como marcador en filtroRis)
-      if (filtroRis === 'HOSP') {
-          cumpleTipo = c.ris === 'SIN RIS';
-      } 
-      // 2. Manejo de RIS Específica (si NO es 'todos' y NO es 'HOSP')
-      else if (RIS_OPTIONS.includes(filtroRis)) {
-          cumpleTipo = c.ris === filtroRis;
-      }
+      if (filtroRis === 'HOSP') cumpleTipo = c.ris === 'SIN RIS';
+      else if (filtroRis !== 'todos') cumpleTipo = c.ris === filtroRis;
 
       // FILTRO DE ESTADO (LIBRE/OCUPADO)
       let cumpleEstado = true;
@@ -706,10 +694,7 @@ const Adjudicacion2026: React.FC = () => {
                 <p style={{ margin: '2px 0 0 0', fontSize: '11px', opacity: 0.6 }}>GESTIÓN DE PLAZAS</p>
             </div>
           </div>
-          
-          {/* BOTONES Y SELECTORES ENCABEZADO */}
           <div style={{ display: 'flex', gap: '10px' }}>
-              {/* SELECTOR DE MAPA (VISIBLE) */}
               <select 
                 value={tipoMapa}
                 onChange={(e) => setTipoMapa(e.target.value as any)}
@@ -720,9 +705,21 @@ const Adjudicacion2026: React.FC = () => {
                 ))}
               </select>
 
-              {/* Los botones Tiempos, Gestión Manual, Volver 2025 han sido eliminados de este renderizado para cumplir con la ocultación. */}
+              {/* Botón Tiempos - OCULTADO */}
+              {/* <button onClick={() => setShowTimeModal(true)} disabled={selectedCareer === 'TODAS'} className="btn-modern btn-edit" style={{opacity: selectedCareer === 'TODAS' ? 0.5 : 1}}>
+                  <i className="fas fa-clock"></i> Tiempos
+              </button> */}
+
+              {/* Botón Gestión Manual - OCULTADO */}
+              {/* <button onClick={() => setShowManageModal(true)} disabled={selectedCareer === 'TODAS'} className="btn-modern btn-save" style={{opacity: selectedCareer === 'TODAS' ? 0.5 : 1}}>
+                  <i className="fas fa-edit"></i> Gestión Manual
+              </button> */}
+
+              {/* Botón Volver 2025 - OCULTADO */}
+              {/* <button onClick={() => navigate('/')} className="btn-modern btn-close">
+                  <i className="fas fa-arrow-left"></i> Volver 2025
+              </button> */}
           </div>
-          {/* FIN BOTONES ENCABEZADO */}
       </div>
 
       {/* FILTROS */}
@@ -741,39 +738,11 @@ const Adjudicacion2026: React.FC = () => {
               <option value="ocupados">🔴 Ocupados</option>
           </select>
 
-          {/* SELECTOR RIS AGREGADO */}
-          <select 
-              // Si filtroRis es 'HOSP' o 'todos', muestra 'Todas las RIS' en el selector, sino, muestra la RIS seleccionada
-              value={RIS_OPTIONS.includes(filtroRis) ? filtroRis : 'todos_ris'} 
-              onChange={(e) => {
-                 // Si selecciona 'todos_ris', se establece filtroRis a 'todos' 
-                 // Si selecciona una RIS específica, se establece filtroRis a ese valor
-                 setFiltroRis(e.target.value === 'todos_ris' ? 'todos' : e.target.value);
-              }} 
-              style={{ width: '120px', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', fontSize: '13px' }}
-          >
-              <option value="todos_ris">🗺️ Todas las RIS</option>
-              {RIS_OPTIONS.map(r => <option key={r} value={r}>✅ {r}</option>)}
-          </select>
-
           <select value={filtroDistrito} onChange={(e) => setFiltroDistrito(e.target.value)} style={{ width: '180px', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', fontSize: '13px' }}> <option value="todos">📍 Todos los Distritos</option> {LISTA_DISTRITOS.map(d => <option key={d} value={d}>{d}</option>)} </select>
-          
-          {/* Botón HOSP/INST */}
-          <button 
-              onClick={() => setFiltroRis(filtroRis === 'HOSP' ? 'todos' : 'HOSP')} 
-              className="btn-modern" 
-              style={{ 
-                  background: filtroRis === 'HOSP' ? '#f43f5e' : '#ffffff', 
-                  color: filtroRis === 'HOSP' ? 'white' : '#f43f5e', 
-                  border: '1px solid #f43f5e' 
-              }}
-          >
-              🏥 HOSP/INST
-          </button>
+          <button onClick={() => setFiltroRis(filtroRis === 'HOSP' ? 'todos' : 'HOSP')} className="btn-modern" style={{ background: filtroRis === 'HOSP' ? '#f43f5e' : '#ffffff', color: filtroRis === 'HOSP' ? 'white' : '#f43f5e', border: '1px solid #f43f5e' }}>🏥 HOSP/INST</button>
       </div>
 
-      {/* MODALES (Estructura de modales para futura activación, pero sin botones visibles) */}
-      {/* Note: Los modales se mantienen aquí pero se accede solo si showTimeModal/showManageModal son true */}
+      {/* MODAL TIEMPOS - SE DEJA EL MODAL POR SI ACASO, AUNQUE EL BOTÓN ESTÉ OCULTO */}
       {showTimeModal && (
           <div className="modal-overlay">
               <div className="modal-content" style={{maxWidth:'800px', height:'80vh'}}>
@@ -812,7 +781,7 @@ const Adjudicacion2026: React.FC = () => {
           </div>
       )}
 
-      {/* MODAL GESTIÓN */}
+      {/* MODAL GESTIÓN - SE DEJA EL MODAL POR SI ACASO, AUNQUE EL BOTÓN ESTÉ OCULTO */}
       {showManageModal && (
           <div className="modal-overlay">
               <div className="modal-content">
@@ -917,7 +886,7 @@ const Adjudicacion2026: React.FC = () => {
           <div style={{ flex: 1, minWidth: '340px', background: '#ffffff', display: 'flex', flexDirection: 'column', boxShadow:'-5px 0 15px rgba(0,0,0,0.05)' }}>
               <div style={{ padding: '20px', borderBottom: '1px solid #e2e8f0', background:'#f8fafc' }}>
                   
-                  {/* === ZONA DE TARJETAS (Totales) === */}
+                  {/* === ZONA DE TARJETAS MODIFICADA PARA MOSTRAR DETALLES === */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', gap:'10px' }}>
                         
                         {/* TARJETA TOTAL OFERTADO */}
