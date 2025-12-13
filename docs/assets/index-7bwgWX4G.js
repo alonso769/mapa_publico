@@ -2083,7 +2083,7 @@ This typically indicates that your device does not have a healthy Internet conne
   .chart-track-modern {
       height: 6px; 
       background: #f1f5f9; 
-      border-radius: 10px; ee
+      border-radius: 10px; 
       overflow: hidden;
       width: 100%;
   }
